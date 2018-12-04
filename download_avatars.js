@@ -19,7 +19,6 @@ function getRepoContributors(repoOwner, repoName, cb) {
       };
 
     request(options, function(err, response, body){
-        // console.log(response);
         var contributors = JSON.parse(body);
         cb(err, contributors);
     });
@@ -27,13 +26,16 @@ function getRepoContributors(repoOwner, repoName, cb) {
 }
 
 getRepoContributors(repoOwner, repoName, function(err, results) {
-    // console.log(results);
-    results.forEach((contributor) => {
-        console.log("Result: ", contributor.avatar_url);
-        //    console.log("Result:", result.avatar_url);
-        downloadImageByURL(contributor.avatar_url, './avatars/' + contributor.login +'.jpg');
-    })
-   
+    
+    if(!repoOwner || !repoName){
+        console.error("You didn't input all the arguments. Please check..");
+    }else{
+        results.forEach((contributor) => {
+            console.log("Result: ", contributor.avatar_url);
+            downloadImageByURL(contributor.avatar_url, './avatars/' + contributor.login +'.jpg');
+        });
+    }
+    
 });
 
 
@@ -42,10 +44,6 @@ function downloadImageByURL(url, filepath){
             .on('error', function(err){
                 console.log(err);
             })
-            // .on('response', function(response){
-            //     console.log('Response Status Code: ', response.statusCode);
-            //     console.log("Response status message: ", response.statusMessage);    
-            // })
             .pipe(fs.createWriteStream(filepath));
 }
 
