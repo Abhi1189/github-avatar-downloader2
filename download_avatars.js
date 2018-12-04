@@ -11,7 +11,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
         url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
         headers: {
           'User-Agent': 'request',
-          'Authorization':secrets.GITHUB_TOKEN
+          'Authorization': 'token ' + secrets.GITHUB_TOKEN
         }
       };
 
@@ -24,9 +24,25 @@ function getRepoContributors(repoOwner, repoName, cb) {
 }
 
 getRepoContributors("jquery", "jquery", function(err, results) {
-    for(var key in results){
-        console.log("Result: ", results[key].avatar_url);
-    //    console.log("Result:", result.avatar_url);
-    }
+    // console.log(results);
+    results.forEach((contributor) => {
+        console.log("Result: ", contributor.avatar_url);
+        //    console.log("Result:", result.avatar_url);
+        downloadImageByURL(contributor.avatar_url, './avatars/' + contributor.login +'.jpg');
+    })
+   
 });
-  
+
+
+function downloadImageByURL(url, filepath){
+    request.get(url)
+            .on('error', function(err){
+                console.log(err);
+            })
+            // .on('response', function(response){
+            //     console.log('Response Status Code: ', response.statusCode);
+            //     console.log("Response status message: ", response.statusMessage);    
+            // })
+            .pipe(fs.createWriteStream(filepath));
+}
+
